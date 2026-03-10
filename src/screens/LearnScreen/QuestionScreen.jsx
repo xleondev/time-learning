@@ -6,6 +6,7 @@ import { generateQuestion, LEVEL_CONFIG, calcStars } from '../../utils/questions
 import FeedbackOverlay from '../../components/FeedbackOverlay/FeedbackOverlay'
 import styles from './QuestionScreen.module.css'
 import { playCorrect, playWrong, playComplete } from '../../utils/sound'
+import LevelIntro from './LevelIntro'
 
 const QUESTIONS_PER_LEVEL = 5
 
@@ -17,6 +18,7 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
   const [attempts, setAttempts] = useState(0)
   const [firstAttemptCorrect, setFirstAttemptCorrect] = useState(0)
   const [feedback, setFeedback] = useState(null) // 'correct' | 'wrong' | 'hint'
+  const [introSeen, setIntroSeen] = useState(false)
   const choices = useMemo(
     () => generateChoices(question.hours, question.minutes),
     [question.hours, question.minutes]
@@ -52,6 +54,10 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
       setSelectedTime({ hours: next.hours, minutes: 0 })
     }
   }, [qIndex, firstAttemptCorrect, level, onComplete])
+
+  if (!introSeen) {
+    return <LevelIntro level={level} onDone={() => setIntroSeen(true)} />
+  }
 
   return (
     <div className={styles.screen}>

@@ -21,6 +21,7 @@ describe('LearnScreen', () => {
   it('clicking Level 1 shows QuestionScreen', () => {
     render(<LearnScreen onNavigate={() => {}} />)
     fireEvent.click(screen.getByText('Level 1').closest('button'))
+    fireEvent.click(screen.getByText(/Let's Go/i))
     expect(screen.getByText(/Question 1 \/ 5/i)).toBeInTheDocument()
   })
 })

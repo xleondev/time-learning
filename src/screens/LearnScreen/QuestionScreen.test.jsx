@@ -26,14 +26,28 @@ beforeEach(() => {
 describe('QuestionScreen (read mode)', () => {
   it('renders progress indicator', () => {
     render(<QuestionScreen level={1} onComplete={() => {}} onBack={() => {}} />)
+    fireEvent.click(screen.getByText(/Let's Go/i))
     expect(screen.getByText(/Question 1 \/ 5/i)).toBeInTheDocument()
   })
 
   it('back button calls onBack', () => {
     const onBack = vi.fn()
     render(<QuestionScreen level={1} onComplete={() => {}} onBack={onBack} />)
+    fireEvent.click(screen.getByText(/Let's Go/i))
     fireEvent.click(screen.getByText(/Back/i))
     expect(onBack).toHaveBeenCalled()
+  })
+
+  it('shows LevelIntro before the first question', () => {
+    render(<QuestionScreen level={1} onComplete={() => {}} onBack={() => {}} />)
+    expect(screen.getByText(/Let's Go/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Question 1 \/ 5/i)).not.toBeInTheDocument()
+  })
+
+  it('shows question after dismissing LevelIntro', () => {
+    render(<QuestionScreen level={1} onComplete={() => {}} onBack={() => {}} />)
+    fireEvent.click(screen.getByText(/Let's Go/i))
+    expect(screen.getByText(/Question 1 \/ 5/i)).toBeInTheDocument()
   })
 })
 
@@ -41,6 +55,7 @@ describe('QuestionScreen (set mode)', () => {
   it('shows Check! button when question type is set', () => {
     // Level 1, questionIndex 0 → type 'set'
     render(<QuestionScreen level={1} onComplete={() => {}} onBack={() => {}} />)
+    fireEvent.click(screen.getByText(/Let's Go/i))
     // Either we see a Check button (set) or choice buttons (read)
     // Just verify the screen renders without crashing
     expect(screen.getByText(/Question 1/i)).toBeInTheDocument()
@@ -51,6 +66,7 @@ describe('QuestionScreen feedback', () => {
   it('renders without crashing with sound mock', async () => {
     const { playCorrect } = await import('../../utils/sound')
     render(<QuestionScreen level={1} onComplete={() => {}} onBack={() => {}} />)
+    fireEvent.click(screen.getByText(/Let's Go/i))
     expect(screen.getByText(/Question 1/i)).toBeInTheDocument()
   })
 
@@ -60,6 +76,7 @@ describe('QuestionScreen feedback', () => {
     // So: render and check the first question renders, then simulate correct answer if it's a read question.
     const onComplete = vi.fn()
     render(<QuestionScreen level={1} onComplete={onComplete} onBack={() => {}} />)
+    fireEvent.click(screen.getByText(/Let's Go/i))
 
     const checkBtn = screen.queryByText('Check!')
     if (checkBtn) {
