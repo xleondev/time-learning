@@ -21,25 +21,29 @@ export default function PlayScreen({ onNavigate }) {
 
       <h2 className={styles.title}>Play with the Clock!</h2>
 
-      <ClockFace
-        hours={time.hours}
-        minutes={time.minutes}
-        interactive
-        snapStep={5}
-        onTimeChange={handleTimeChange}
-      />
+      <div className={styles.clockCol}>
+        <ClockFace
+          hours={time.hours}
+          minutes={time.minutes}
+          interactive
+          snapStep={5}
+          onTimeChange={handleTimeChange}
+        />
+      </div>
 
-      <motion.div
-        className={styles.timeDisplay}
-        key={formatTime(time.hours, time.minutes)}
-        initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-      >
-        {formatTime(time.hours, time.minutes)}
-      </motion.div>
+      <div className={styles.controlsCol}>
+        <motion.div
+          className={styles.timeDisplay}
+          key={formatTime(time.hours, time.minutes)}
+          initial={{ scale: 0.8 }} animate={{ scale: 1 }}
+        >
+          {formatTime(time.hours, time.minutes)}
+        </motion.div>
 
-      <button className={styles.randomBtn} onClick={() => setTime(randomTime())}>
-        🎲 Random Time!
-      </button>
+        <button className={styles.randomBtn} onClick={() => setTime(randomTime())}>
+          🎲 Random Time!
+        </button>
+      </div>
     </div>
   )
 }

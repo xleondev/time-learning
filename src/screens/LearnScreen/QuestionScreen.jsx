@@ -77,41 +77,49 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
         >
           {question.type === 'set' ? (
             <>
-              <p className={styles.prompt}>
-                Show me <strong>{formatTime(question.hours, question.minutes)}</strong>!
-              </p>
-              <ClockFace
-                hours={selectedTime.hours}
-                minutes={selectedTime.minutes}
-                interactive
-                snapStep={config.snapStep}
-                onTimeChange={setSelectedTime}
-              />
-              <button
-                className={styles.checkBtn}
-                onClick={() => handleCheck(selectedTime.hours, selectedTime.minutes)}
-                disabled={!!feedback}
-              >
-                Check!
-              </button>
+              <div className={styles.clockCol}>
+                <ClockFace
+                  hours={selectedTime.hours}
+                  minutes={selectedTime.minutes}
+                  interactive
+                  snapStep={config.snapStep}
+                  onTimeChange={setSelectedTime}
+                />
+              </div>
+              <div className={styles.controlsCol}>
+                <p className={styles.prompt}>
+                  Show me <strong>{formatTime(question.hours, question.minutes)}</strong>!
+                </p>
+                <button
+                  className={styles.checkBtn}
+                  onClick={() => handleCheck(selectedTime.hours, selectedTime.minutes)}
+                  disabled={!!feedback}
+                >
+                  Check!
+                </button>
+              </div>
             </>
           ) : (
             <>
-              <p className={styles.prompt}>What time does the clock show?</p>
-              <ClockFace hours={question.hours} minutes={question.minutes} />
-              <div className={styles.choices}>
-                {choices.map((c, i) => (
-                  <button
-                    key={i}
-                    className={`${styles.choiceBtn} ${
-                      feedback === 'hint' && isCorrect(c.hours, c.minutes) ? styles.hintChoice : ''
-                    }`}
-                    onClick={() => handleCheck(c.hours, c.minutes)}
-                    disabled={!!feedback}
-                  >
-                    {formatTime(c.hours, c.minutes)}
-                  </button>
-                ))}
+              <div className={styles.clockCol}>
+                <ClockFace hours={question.hours} minutes={question.minutes} />
+              </div>
+              <div className={styles.controlsCol}>
+                <p className={styles.prompt}>What time does the clock show?</p>
+                <div className={styles.choices}>
+                  {choices.map((c, i) => (
+                    <button
+                      key={i}
+                      className={`${styles.choiceBtn} ${
+                        feedback === 'hint' && isCorrect(c.hours, c.minutes) ? styles.hintChoice : ''
+                      }`}
+                      onClick={() => handleCheck(c.hours, c.minutes)}
+                      disabled={!!feedback}
+                    >
+                      {formatTime(c.hours, c.minutes)}
+                    </button>
+                  ))}
+                </div>
               </div>
             </>
           )}
