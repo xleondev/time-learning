@@ -1,0 +1,41 @@
+.overlay {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  border: 4px solid var(--dark);
+  box-shadow: 5px 5px 0 var(--dark);
+  z-index: 100;
+  text-align: center;
+  min-width: 280px;
+}
+
+.correct { background: var(--yellow); }
+.wrong { background: #ffccbc; }
+
+.message {
+  font-family: 'Schoolbell', cursive;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  color: var(--dark);
+  margin-bottom: 1rem;
+}
+
+.hint {
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.nextBtn {
+  font-family: 'Schoolbell', cursive;
+  font-size: 1.5rem;
+  padding: 0.5rem 1.5rem;
+  background: var(--green);
+  border: 3px solid var(--dark);
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--dark);
+}

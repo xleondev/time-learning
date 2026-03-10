@@ -3,29 +3,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import ClockFace from '../../components/ClockFace/ClockFace'
 import { formatTime, generateChoices } from '../../utils/time'
 import { generateQuestion, LEVEL_CONFIG, calcStars } from '../../utils/questions'
+import FeedbackOverlay from '../../components/FeedbackOverlay/FeedbackOverlay'
 import styles from './QuestionScreen.module.css'
 
 const QUESTIONS_PER_LEVEL = 5
-
-// Temporary local stub — will be replaced when FeedbackOverlay is built in Task 11
-function FeedbackOverlay({ type, correctTime, onNext }) {
-  const isCorrect = type === 'correct'
-  return (
-    <div style={{
-      position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)',
-      background: isCorrect ? '#ffd54f' : '#ffccbc', padding: '1.5rem 2rem',
-      border: '4px solid #3e2723', borderRadius: '20px', boxShadow: '5px 5px 0 #3e2723',
-      zIndex: 100, textAlign: 'center', minWidth: '280px', fontFamily: 'Schoolbell, cursive'
-    }}>
-      <p style={{ fontSize: '2rem', marginBottom: '1rem' }}>
-        {isCorrect ? 'Woohoo! 🎉' : type === 'hint' ? `The answer is ${correctTime} 👀` : 'Oops! Try again! 😊'}
-      </p>
-      <button onClick={onNext} style={{ fontSize: '1.5rem', padding: '0.5rem 1.5rem', cursor: 'pointer' }}>
-        {isCorrect ? 'Next →' : 'Got it →'}
-      </button>
-    </div>
-  )
-}
 
 export default function QuestionScreen({ level, onComplete, onBack }) {
   const config = LEVEL_CONFIG[level]

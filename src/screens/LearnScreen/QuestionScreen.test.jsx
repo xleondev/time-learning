@@ -2,6 +2,19 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import QuestionScreen from './QuestionScreen'
 
+// Mock canvas API so Confetti doesn't crash in jsdom
+beforeEach(() => {
+  HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+    clearRect: vi.fn(),
+    save: vi.fn(),
+    restore: vi.fn(),
+    translate: vi.fn(),
+    rotate: vi.fn(),
+    fillRect: vi.fn(),
+    fillStyle: '',
+  }))
+})
+
 // Generate a predictable "read" question for testing choices
 // We'll use level 1 (hours only) to keep things simple
 describe('QuestionScreen (read mode)', () => {
@@ -42,7 +55,9 @@ describe('QuestionScreen feedback', () => {
       fireEvent.click(checkBtn)
       // Should show either correct or wrong feedback
       await waitFor(() => {
-        expect(screen.queryByText(/Woohoo|Oops/i)).toBeInTheDocument()
+        // FeedbackOverlay always renders a Next → or Got it → button
+        const nextBtn = screen.queryByText(/Next →|Got it →/)
+        expect(nextBtn).toBeInTheDocument()
       })
     } else {
       // It's a 'read' question — click the first choice button
