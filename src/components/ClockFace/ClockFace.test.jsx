@@ -80,3 +80,35 @@ describe('ClockFace tick marks', () => {
     expect(svg).toBeInTheDocument()
   })
 })
+
+describe('ClockFace magnifier loupe', () => {
+  it('shows loupe element when dragging starts on interactive clock', () => {
+    const { container } = render(
+      <ClockFace hours={3} minutes={0} interactive snapStep={5} onTimeChange={() => {}} />
+    )
+    const svg = container.querySelector('svg')
+    svg.getBoundingClientRect = () => ({ left: 0, top: 0, width: 300, height: 300 })
+    act(() => { fireEvent.mouseDown(svg, { clientX: 150, clientY: 50 }) })
+    expect(container.querySelector('[data-testid="loupe"]')).toBeInTheDocument()
+  })
+
+  it('hides loupe after drag ends', () => {
+    const { container } = render(
+      <ClockFace hours={3} minutes={0} interactive snapStep={5} onTimeChange={() => {}} />
+    )
+    const svg = container.querySelector('svg')
+    svg.getBoundingClientRect = () => ({ left: 0, top: 0, width: 300, height: 300 })
+    act(() => {
+      fireEvent.mouseDown(svg, { clientX: 150, clientY: 50 })
+      fireEvent.mouseUp(window)
+    })
+    expect(container.querySelector('[data-testid="loupe"]')).not.toBeInTheDocument()
+  })
+
+  it('does not show loupe on non-interactive clock', () => {
+    const { container } = render(<ClockFace hours={3} minutes={0} />)
+    const svg = container.querySelector('svg')
+    act(() => { fireEvent.mouseDown(svg, { clientX: 150, clientY: 50 }) })
+    expect(container.querySelector('[data-testid="loupe"]')).not.toBeInTheDocument()
+  })
+})

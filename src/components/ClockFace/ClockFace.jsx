@@ -37,6 +37,10 @@ export default function ClockFace({
   const displayHours = interactive ? localHours : hours
   const displayMinutes = interactive ? localMinutes : minutes
 
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragClient, setDragClient] = useState(null) // { clientX, clientY }
+  const loupeRef = useRef(null)
+
   const handleAngleChange = useCallback((angle) => {
     const rawMinutes = Math.round((angle / 360) * 60)
     const snapped = snapMinutes(rawMinutes % 60, snapStep)
@@ -58,7 +62,12 @@ export default function ClockFace({
     interactive ? svgRef : { current: null },
     CX,
     CY,
-    handleAngleChange
+    handleAngleChange,
+    {
+      onDragStart: () => setIsDragging(true),
+      onDragEnd: () => { setIsDragging(false); setDragClient(null) },
+      onPointerMove: (pos) => setDragClient(pos),
+    }
   )
 
   const { hourAngle, minuteAngle } = timeToAngles(displayHours, displayMinutes)
@@ -128,7 +137,30 @@ export default function ClockFace({
       fillStyle: 'solid',
       stroke: '#4e342e',
     }))
+
+    addHandTouchTarget(svg, hourAngle, R * 0.55, '#ef5350', interactive)
+    addHandTouchTarget(svg, minuteAngle, R * 0.8, '#42a5f5', interactive)
+  }, [displayHours, displayMinutes, interactive])
+
+  // Copy SVG content to loupe whenever clock redraws
+  useEffect(() => {
+    if (loupeRef.current && svgRef.current) {
+      loupeRef.current.innerHTML = svgRef.current.innerHTML
+    }
   }, [displayHours, displayMinutes])
+
+  const loupeProps = (() => {
+    if (!isDragging || !dragClient || !svgRef.current) return null
+    const rect = svgRef.current.getBoundingClientRect()
+    const scale = rect.width / SIZE
+    const svgX = (dragClient.clientX - rect.left) / scale
+    const svgY = (dragClient.clientY - rect.top) / scale
+    const win = 80
+    const viewBox = `${svgX - win / 2} ${svgY - win / 2} ${win} ${win}`
+    const left = Math.max(0, Math.min(window.innerWidth - 150, dragClient.clientX - 75))
+    const top = Math.max(0, dragClient.clientY - 230)
+    return { viewBox, left, top }
+  })()
 
   return (
     <div className={styles.wrapper}>
@@ -140,6 +172,19 @@ export default function ClockFace({
         className={styles.clock}
         style={interactive ? { cursor: 'grab', touchAction: 'none' } : {}}
       />
+      {loupeProps && (
+        <div
+          data-testid="loupe"
+          className={styles.loupeContainer}
+          style={{ left: loupeProps.left, top: loupeProps.top }}
+        >
+          <svg
+            ref={loupeRef}
+            className={styles.loupeSvg}
+            viewBox={loupeProps.viewBox}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -153,4 +198,31 @@ function drawHand(svg, rc, angleDeg, length, color, width) {
     strokeWidth: width,
     stroke: color,
   }))
+}
+
+function addHandTouchTarget(svg, angleDeg, length, dotColor, interactive) {
+  const angle = (angleDeg - 90) * (Math.PI / 180)
+  const tipX = CX + length * Math.cos(angle)
+  const tipY = CY + length * Math.sin(angle)
+
+  if (interactive) {
+    // Large invisible hit area
+    const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    hitArea.setAttribute('cx', tipX)
+    hitArea.setAttribute('cy', tipY)
+    hitArea.setAttribute('r', 22)
+    hitArea.setAttribute('fill', 'transparent')
+    hitArea.setAttribute('stroke', 'none')
+    svg.appendChild(hitArea)
+  }
+
+  // Small visible affordance dot
+  const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+  dot.setAttribute('cx', tipX)
+  dot.setAttribute('cy', tipY)
+  dot.setAttribute('r', 5)
+  dot.setAttribute('fill', dotColor)
+  dot.setAttribute('stroke', '#4e342e')
+  dot.setAttribute('stroke-width', '1.5')
+  svg.appendChild(dot)
 }
