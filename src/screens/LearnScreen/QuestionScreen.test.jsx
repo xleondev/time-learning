@@ -56,7 +56,7 @@ describe('QuestionScreen feedback', () => {
       // Should show either correct or wrong feedback
       await waitFor(() => {
         // FeedbackOverlay always renders a Next → or Got it → button
-        const nextBtn = screen.queryByText(/Next →|Got it →/)
+        const nextBtn = screen.queryByText(/Next →|Got it, continue →/)
         expect(nextBtn).toBeInTheDocument()
       })
     } else {

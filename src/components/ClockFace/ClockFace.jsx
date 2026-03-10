@@ -20,6 +20,12 @@ export default function ClockFace({
   const [localHours, setLocalHours] = useState(hours)
   const [localMinutes, setLocalMinutes] = useState(minutes)
 
+  // Refs so handleAngleChange always reads current values without stale closure
+  const localHoursRef = useRef(localHours)
+  const prevMinutesRef = useRef(localMinutes)
+  useEffect(() => { localHoursRef.current = localHours }, [localHours])
+  useEffect(() => { prevMinutesRef.current = localMinutes }, [localMinutes])
+
   // Sync to external props when not interactive
   useEffect(() => {
     if (!interactive) {
@@ -35,10 +41,18 @@ export default function ClockFace({
     const rawMinutes = Math.round((angle / 360) * 60)
     const snapped = snapMinutes(rawMinutes % 60, snapStep)
     const newMinutes = snapped === 60 ? 0 : snapped
-    // Determine hours from the minute-hand position crossing 12
+    const prev = prevMinutesRef.current
+    let newHours = localHoursRef.current
+    // Detect minute hand crossing 12 o'clock: high->low = hour++, low->high = hour--
+    if (prev > 45 && newMinutes < 15) {
+      newHours = (newHours % 12) + 1
+    } else if (prev < 15 && newMinutes > 45) {
+      newHours = newHours === 1 ? 12 : newHours - 1
+    }
+    setLocalHours(newHours)
     setLocalMinutes(newMinutes)
-    onTimeChange?.({ hours: localHours, minutes: newMinutes })
-  }, [localHours, snapStep, onTimeChange])
+    onTimeChange?.({ hours: newHours, minutes: newMinutes })
+  }, [snapStep, onTimeChange])
 
   useDragHand(
     interactive ? svgRef : { current: null },
