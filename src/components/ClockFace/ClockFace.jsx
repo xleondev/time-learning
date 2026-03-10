@@ -61,7 +61,7 @@ export default function ClockFace({ hours = 12, minutes = 0 }) {
       fillStyle: 'solid',
       stroke: '#4e342e',
     }))
-  }, [hours, minutes, hourAngle, minuteAngle])
+  }, [hours, minutes])
 
   return (
     <div className={styles.wrapper}>
