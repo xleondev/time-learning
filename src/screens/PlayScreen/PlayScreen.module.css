@@ -8,6 +8,7 @@
   padding: 2rem;
   background: radial-gradient(ellipse, #e8f5e9 0%, #fffde7 80%);
   position: relative;
+  overflow-y: auto;
 }
 
 .title {
@@ -49,6 +50,11 @@
   border: none;
   cursor: pointer;
   color: var(--text);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
 }
 
 @media (max-width: 600px) {

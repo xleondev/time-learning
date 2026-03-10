@@ -48,6 +48,23 @@
 .learnBtn { background: var(--yellow); }
 .playBtn { background: var(--green); }
 
+.back {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+}
+
 .doodles { position: absolute; inset: 0; pointer-events: none; }
 .doodle { position: absolute; font-size: clamp(2rem, 5vw, 3.5rem); opacity: 0.6; }
 

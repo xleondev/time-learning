@@ -8,6 +8,7 @@
   padding: 2rem;
   gap: 1.5rem;
   background: radial-gradient(ellipse, #fce4ec 0%, #fffde7 80%);
+  overflow-y: auto;
 }
 
 .progress {
@@ -82,6 +83,11 @@
   border: none;
   cursor: pointer;
   color: var(--text);
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
 }
 
 @media (max-width: 600px) {
