@@ -1,5 +1,5 @@
 .screen {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -49,4 +49,42 @@
   border: none;
   cursor: pointer;
   color: var(--text);
+}
+
+@media (max-width: 600px) {
+  .screen {
+    justify-content: flex-start;
+    padding-top: 3rem;
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .screen {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    align-items: center;
+    padding: 2rem 3rem;
+    gap: 2rem;
+  }
+  .title {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+  .back {
+    grid-column: 1 / -1;
+  }
+  .clockCol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .controlsCol {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+  }
 }

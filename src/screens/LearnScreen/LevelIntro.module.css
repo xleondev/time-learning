@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 1rem;
   background: #fff8e1;
   gap: 1rem;
@@ -82,4 +82,18 @@
 .goBtn:active {
   transform: translateY(2px);
   box-shadow: 0 2px 0 #388e3c;
+}
+
+@media (max-width: 600px) {
+  .clockWrapper { flex-direction: column; }
+  .hourLabel {
+    position: static;
+    align-self: flex-start;
+    margin-top: 0.5rem;
+  }
+  .minuteLabel {
+    position: static;
+    align-self: flex-end;
+    margin-top: 0.3rem;
+  }
 }

@@ -1,5 +1,5 @@
 .screen {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -50,3 +50,7 @@
 
 .doodles { position: absolute; inset: 0; pointer-events: none; }
 .doodle { position: absolute; font-size: clamp(2rem, 5vw, 3.5rem); opacity: 0.6; }
+
+@media (max-width: 600px) {
+  .subtitle { margin-bottom: 1rem; }
+}

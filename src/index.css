@@ -18,3 +18,5 @@ body {
   --dark: #3e2723;
   --text: #4e342e;
 }
+
+button { touch-action: manipulation; }
