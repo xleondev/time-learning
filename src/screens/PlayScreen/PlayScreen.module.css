@@ -1,0 +1,52 @@
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: radial-gradient(ellipse, #e8f5e9 0%, #fffde7 80%);
+  position: relative;
+}
+
+.title {
+  font-family: 'Schoolbell', cursive;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  color: var(--dark);
+}
+
+.timeDisplay {
+  font-family: 'Schoolbell', cursive;
+  font-size: clamp(3rem, 10vw, 5rem);
+  color: var(--dark);
+  background: white;
+  padding: 0.3em 0.8em;
+  border: 3px solid var(--dark);
+  border-radius: 12px;
+  box-shadow: 3px 3px 0 var(--dark);
+}
+
+.randomBtn {
+  font-family: 'Schoolbell', cursive;
+  font-size: 1.5rem;
+  padding: 0.7rem 2rem;
+  background: var(--purple);
+  color: white;
+  border: 3px solid var(--dark);
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--dark);
+}
+
+.back {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+}
