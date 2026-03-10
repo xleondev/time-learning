@@ -6,7 +6,7 @@ export function timeToAngles(hours, minutes) {
 
 export function anglesToTime(hourAngle, minuteAngle) {
   const minutes = Math.round((minuteAngle / 360) * 60) % 60
-  const hours = Math.round((hourAngle / 360) * 12) % 12 || 12
+  const hours = Math.floor((hourAngle / 360) * 12) % 12 || 12
   return { hours, minutes }
 }
 
@@ -25,7 +25,7 @@ export function generateChoices(correctHours, correctMinutes) {
   const choices = [{ hours: correctHours, minutes: correctMinutes }]
   const offsets = [-30, 30, -60, 60, 15, -15, 5, -5].filter(o => o !== 0)
   let i = 0
-  while (choices.length < 3) {
+  while (choices.length < 3 && i < offsets.length) {
     const offset = offsets[i++]
     const totalMins = correctHours * 60 + correctMinutes + offset
     const h = Math.floor(((totalMins % 720) + 720) % 720 / 60) || 12

@@ -44,6 +44,11 @@ describe('anglesToTime', () => {
   it('converts 90 hour angle to 3 hours', () => {
     expect(anglesToTime(90, 0).hours).toBe(3)
   })
+
+  it('correctly reads back hour from composite angle (e.g. 3:30)', () => {
+    const { hourAngle, minuteAngle } = timeToAngles(3, 30)
+    expect(anglesToTime(hourAngle, minuteAngle).hours).toBe(3)
+  })
 })
 
 describe('formatTime', () => {
