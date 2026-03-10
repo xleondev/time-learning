@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import HomeScreen from './screens/HomeScreen/HomeScreen'
-import LearnScreen from './screens/LearnScreen'
+import LearnScreen from './screens/LearnScreen/LearnScreen'
 import PlayScreen from './screens/PlayScreen/PlayScreen'
 
 export default function App() {
