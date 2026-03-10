@@ -2,6 +2,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import QuestionScreen from './QuestionScreen'
 
+vi.mock('../../utils/sound', () => ({
+  playCorrect: vi.fn(),
+  playWrong: vi.fn(),
+  playComplete: vi.fn(),
+}))
+
 // Mock canvas API so Confetti doesn't crash in jsdom
 beforeEach(() => {
   HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
@@ -42,6 +48,12 @@ describe('QuestionScreen (set mode)', () => {
 })
 
 describe('QuestionScreen feedback', () => {
+  it('renders without crashing with sound mock', async () => {
+    const { playCorrect } = await import('../../utils/sound')
+    render(<QuestionScreen level={1} onComplete={() => {}} onBack={() => {}} />)
+    expect(screen.getByText(/Question 1/i)).toBeInTheDocument()
+  })
+
   it('shows Woohoo after correct answer in read mode', async () => {
     // Force a read question by using a mock — we'll render level 2 which starts with 'set'
     // Instead, we test at level 1 questionIndex 1 (read), but we can't control that easily.

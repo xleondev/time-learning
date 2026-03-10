@@ -5,6 +5,7 @@ import { formatTime, generateChoices } from '../../utils/time'
 import { generateQuestion, LEVEL_CONFIG, calcStars } from '../../utils/questions'
 import FeedbackOverlay from '../../components/FeedbackOverlay/FeedbackOverlay'
 import styles from './QuestionScreen.module.css'
+import { playCorrect, playWrong, playComplete } from '../../utils/sound'
 
 const QUESTIONS_PER_LEVEL = 5
 
@@ -27,10 +28,12 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
     if (feedback) return
     if (isCorrect(h, m)) {
       if (attempts === 0) setFirstAttemptCorrect(p => p + 1)
+      playCorrect()
       setFeedback('correct')
     } else {
       const newAttempts = attempts + 1
       setAttempts(newAttempts)
+      playWrong()
       setFeedback(newAttempts >= 2 ? 'hint' : 'wrong')
     }
   }
@@ -40,6 +43,7 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
     setAttempts(0)
     const nextIndex = qIndex + 1
     if (nextIndex >= QUESTIONS_PER_LEVEL) {
+      playComplete()
       onComplete(calcStars(firstAttemptCorrect))
     } else {
       setQIndex(nextIndex)
