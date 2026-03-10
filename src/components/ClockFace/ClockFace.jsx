@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import rough from 'roughjs'
-import { timeToAngles } from '../../utils/time'
+import { timeToAngles, anglesToTime, snapMinutes } from '../../utils/time'
+import { useDragHand } from './useDragHand'
 import styles from './ClockFace.module.css'
 
 const SIZE = 300
@@ -8,12 +9,49 @@ const CX = SIZE / 2
 const CY = SIZE / 2
 const R = 120
 
-export default function ClockFace({ hours = 12, minutes = 0 }) {
+export default function ClockFace({
+  hours = 12,
+  minutes = 0,
+  interactive = false,
+  snapStep = 1,
+  onTimeChange,
+}) {
   const svgRef = useRef(null)
-  const { hourAngle, minuteAngle } = timeToAngles(hours, minutes)
+  const [localHours, setLocalHours] = useState(hours)
+  const [localMinutes, setLocalMinutes] = useState(minutes)
+
+  // Sync to external props when not interactive
+  useEffect(() => {
+    if (!interactive) {
+      setLocalHours(hours)
+      setLocalMinutes(minutes)
+    }
+  }, [hours, minutes, interactive])
+
+  const displayHours = interactive ? localHours : hours
+  const displayMinutes = interactive ? localMinutes : minutes
+
+  const handleAngleChange = useCallback((angle) => {
+    const rawMinutes = Math.round((angle / 360) * 60)
+    const snapped = snapMinutes(rawMinutes % 60, snapStep)
+    const newMinutes = snapped === 60 ? 0 : snapped
+    // Determine hours from the minute-hand position crossing 12
+    setLocalMinutes(newMinutes)
+    onTimeChange?.({ hours: localHours, minutes: newMinutes })
+  }, [localHours, snapStep, onTimeChange])
+
+  useDragHand(
+    interactive ? svgRef : { current: null },
+    CX,
+    CY,
+    handleAngleChange
+  )
+
+  const { hourAngle, minuteAngle } = timeToAngles(displayHours, displayMinutes)
 
   useEffect(() => {
     const svg = svgRef.current
+    if (!svg) return
     svg.innerHTML = ''
     const rc = rough.svg(svg)
 
@@ -26,7 +64,7 @@ export default function ClockFace({ hours = 12, minutes = 0 }) {
       stroke: '#4e342e',
     }))
 
-    // Hour markers
+    // Hour markers and tick marks
     for (let i = 1; i <= 12; i++) {
       const angle = (i / 12) * 2 * Math.PI - Math.PI / 2
       const tx = CX + (R - 18) * Math.cos(angle)
@@ -42,7 +80,6 @@ export default function ClockFace({ hours = 12, minutes = 0 }) {
       text.textContent = i
       svg.appendChild(text)
 
-      // Tick marks
       const x1 = CX + (R - 6) * Math.cos(angle)
       const y1 = CY + (R - 6) * Math.sin(angle)
       const x2 = CX + R * Math.cos(angle)
@@ -51,8 +88,8 @@ export default function ClockFace({ hours = 12, minutes = 0 }) {
     }
 
     // Draw hands
-    drawHand(svg, rc, hourAngle, R * 0.55, '#ef5350', 6)   // hour: red
-    drawHand(svg, rc, minuteAngle, R * 0.8, '#42a5f5', 4)  // minute: blue
+    drawHand(svg, rc, hourAngle, R * 0.55, '#ef5350', 6)
+    drawHand(svg, rc, minuteAngle, R * 0.8, '#42a5f5', 4)
 
     // Center dot
     svg.appendChild(rc.circle(CX, CY, 12, {
@@ -61,7 +98,7 @@ export default function ClockFace({ hours = 12, minutes = 0 }) {
       fillStyle: 'solid',
       stroke: '#4e342e',
     }))
-  }, [hours, minutes])
+  }, [displayHours, displayMinutes])
 
   return (
     <div className={styles.wrapper}>
@@ -71,6 +108,7 @@ export default function ClockFace({ hours = 12, minutes = 0 }) {
         height={SIZE}
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         className={styles.clock}
+        style={interactive ? { cursor: 'grab', touchAction: 'none' } : {}}
       />
     </div>
   )
