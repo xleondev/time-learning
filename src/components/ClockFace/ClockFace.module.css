@@ -1,0 +1,11 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock {
+  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15));
+  max-width: 100%;
+  height: auto;
+}
