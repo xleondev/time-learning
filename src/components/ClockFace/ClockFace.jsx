@@ -23,9 +23,11 @@ export default function ClockFace({
 
   // Refs so handleAngleChange always reads current values without stale closure
   const localHoursRef = useRef(localHours)
+  const localMinutesRef = useRef(localMinutes)
   const prevMinutesRef = useRef(localMinutes)
+  const activeHandRef = useRef('minute')
   useEffect(() => { localHoursRef.current = localHours }, [localHours])
-  useEffect(() => { prevMinutesRef.current = localMinutes }, [localMinutes])
+  useEffect(() => { localMinutesRef.current = localMinutes; prevMinutesRef.current = localMinutes }, [localMinutes])
 
   // Sync to external props when not interactive
   useEffect(() => {
@@ -46,20 +48,27 @@ export default function ClockFace({
   const loupeRef = useRef(null)
 
   const handleAngleChange = useCallback((angle) => {
-    const rawMinutes = Math.round((angle / 360) * 60)
-    const snapped = snapMinutes(rawMinutes % 60, snapStep)
-    const newMinutes = snapped === 60 ? 0 : snapped
-    const prev = prevMinutesRef.current
-    let newHours = localHoursRef.current
-    // Detect minute hand crossing 12 o'clock: high->low = hour++, low->high = hour--
-    if (prev > 45 && newMinutes < 15) {
-      newHours = (newHours % 12) + 1
-    } else if (prev < 15 && newMinutes > 45) {
-      newHours = newHours === 1 ? 12 : newHours - 1
+    if (activeHandRef.current === 'hour') {
+      const rawHour = Math.round(angle / 30) % 12
+      const newHours = rawHour === 0 ? 12 : rawHour
+      setLocalHours(newHours)
+      onTimeChange?.({ hours: newHours, minutes: localMinutesRef.current })
+    } else {
+      const rawMinutes = Math.round((angle / 360) * 60)
+      const snapped = snapMinutes(rawMinutes % 60, snapStep)
+      const newMinutes = snapped === 60 ? 0 : snapped
+      const prev = prevMinutesRef.current
+      let newHours = localHoursRef.current
+      // Detect minute hand crossing 12 o'clock: high->low = hour++, low->high = hour--
+      if (prev > 45 && newMinutes < 15) {
+        newHours = (newHours % 12) + 1
+      } else if (prev < 15 && newMinutes > 45) {
+        newHours = newHours === 1 ? 12 : newHours - 1
+      }
+      setLocalHours(newHours)
+      setLocalMinutes(newMinutes)
+      onTimeChange?.({ hours: newHours, minutes: newMinutes })
     }
-    setLocalHours(newHours)
-    setLocalMinutes(newMinutes)
-    onTimeChange?.({ hours: newHours, minutes: newMinutes })
   }, [snapStep, onTimeChange])
 
   useDragHand(
@@ -68,11 +77,24 @@ export default function ClockFace({
     CY,
     handleAngleChange,
     {
-      onDragStart: () => {
+      onDragStart: (pos) => {
         setIsDragging(true)
         if (showHint) {
           localStorage.setItem('clockDragHintSeen', '1')
           setShowHint(false)
+        }
+        // Detect which hand is closest to the touch point
+        if (pos && svgRef.current) {
+          const rect = svgRef.current.getBoundingClientRect()
+          const scale = rect.width / SIZE
+          const svgX = (pos.clientX - rect.left) / scale
+          const svgY = (pos.clientY - rect.top) / scale
+          const { hourAngle: hA, minuteAngle: mA } = timeToAngles(localHoursRef.current, localMinutesRef.current)
+          const hourRad = (hA - 90) * Math.PI / 180
+          const minRad = (mA - 90) * Math.PI / 180
+          const dHour = Math.hypot(svgX - (CX + R * 0.55 * Math.cos(hourRad)), svgY - (CY + R * 0.55 * Math.sin(hourRad)))
+          const dMin = Math.hypot(svgX - (CX + R * 0.72 * Math.cos(minRad)), svgY - (CY + R * 0.72 * Math.sin(minRad)))
+          activeHandRef.current = dHour < dMin ? 'hour' : 'minute'
         }
       },
       onDragEnd: () => { setIsDragging(false); setDragClient(null) },

@@ -23,7 +23,7 @@ export function useDragHand(svgRef, centerX, centerY, onAngleChange, callbacks =
       dragging.current = true
       e.preventDefault()
       const touch = e.touches?.[0] ?? e
-      onDragStart?.()
+      onDragStart?.({ clientX: touch.clientX, clientY: touch.clientY })
       onPointerMove?.({ clientX: touch.clientX, clientY: touch.clientY })
     }
     const onMove = (e) => {
