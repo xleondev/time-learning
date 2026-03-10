@@ -78,6 +78,22 @@ export default function ClockFace({
       stroke: '#4e342e',
     }))
 
+    // Minute tick marks (60 small, 12 medium at 5-min positions)
+    for (let m = 0; m < 60; m++) {
+      const isFiveMin = m % 5 === 0
+      const angle = (m / 60) * 2 * Math.PI - Math.PI / 2
+      const tickLen = isFiveMin ? 7 : 4
+      const x1 = CX + (R - tickLen) * Math.cos(angle)
+      const y1 = CY + (R - tickLen) * Math.sin(angle)
+      const x2 = CX + R * Math.cos(angle)
+      const y2 = CY + R * Math.sin(angle)
+      svg.appendChild(rc.line(x1, y1, x2, y2, {
+        roughness: 0.8,
+        strokeWidth: isFiveMin ? 2.5 : 1.2,
+        stroke: '#8d6e63',
+      }))
+    }
+
     // Hour markers and tick marks
     for (let i = 1; i <= 12; i++) {
       const angle = (i / 12) * 2 * Math.PI - Math.PI / 2

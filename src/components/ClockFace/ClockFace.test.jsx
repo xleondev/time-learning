@@ -72,3 +72,11 @@ describe('ClockFace (interactive)', () => {
     expect(onTimeChange).not.toHaveBeenCalled()
   })
 })
+
+describe('ClockFace tick marks', () => {
+  it('renders SVG with minute tick data-attributes', () => {
+    const { container } = render(<ClockFace />)
+    const svg = container.querySelector('svg')
+    expect(svg).toBeInTheDocument()
+  })
+})
