@@ -37,6 +37,13 @@ describe('generateQuestion', () => {
     const q = generateQuestion(3)
     expect(['set', 'read']).toContain(q.type)
   })
+
+  it('alternates type by questionIndex (even=set, odd=read)', () => {
+    expect(generateQuestion(1, 0).type).toBe('set')
+    expect(generateQuestion(1, 1).type).toBe('read')
+    expect(generateQuestion(1, 2).type).toBe('set')
+    expect(generateQuestion(1, 3).type).toBe('read')
+  })
 })
 
 describe('calcStars', () => {

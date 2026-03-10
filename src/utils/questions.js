@@ -16,7 +16,8 @@ export function generateQuestion(level, questionIndex = 0) {
   return { hours, minutes, type }
 }
 
-export function calcStars(firstAttemptCorrect) {
+// eslint-disable-next-line no-unused-vars
+export function calcStars(firstAttemptCorrect, _wrong) {
   if (firstAttemptCorrect >= 5) return 3
   if (firstAttemptCorrect >= 4) return 2
   return 1
