@@ -26,6 +26,22 @@ describe('loadProgress', () => {
     mockStorage.setItem('clockProgress', JSON.stringify({ highestUnlocked: 3, levelStars: [3, 2, 1, 0, 0] }))
     const p = loadProgress()
     expect(p.highestUnlocked).toBe(3)
+    expect(p.levelStars).toEqual([3, 2, 1, 0, 0])
+  })
+
+  it('returns default when stored JSON is malformed', () => {
+    mockStorage.setItem('clockProgress', 'not-json')
+    const p = loadProgress()
+    expect(p.highestUnlocked).toBe(1)
+    expect(p.levelStars).toEqual([0, 0, 0, 0, 0])
+  })
+})
+
+describe('saveProgress', () => {
+  it('persists progress so loadProgress can read it back', () => {
+    const saved = { highestUnlocked: 2, levelStars: [3, 0, 0, 0, 0] }
+    saveProgress(saved)
+    expect(loadProgress()).toEqual(saved)
   })
 })
 
