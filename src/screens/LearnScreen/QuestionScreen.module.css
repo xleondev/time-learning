@@ -1,0 +1,85 @@
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1.5rem;
+  background: radial-gradient(ellipse, #fce4ec 0%, #fffde7 80%);
+  position: relative;
+}
+
+.progress {
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  color: var(--text);
+}
+
+.prompt {
+  font-family: 'Schoolbell', cursive;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  color: var(--dark);
+  text-align: center;
+}
+
+.questionArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.checkBtn {
+  font-family: 'Schoolbell', cursive;
+  font-size: 1.8rem;
+  padding: 0.6rem 2.5rem;
+  background: var(--orange);
+  border: 3px solid var(--dark);
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--dark);
+}
+
+.choices {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.choiceBtn {
+  font-family: 'Schoolbell', cursive;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  padding: 0.7rem 1.5rem;
+  background: var(--blue);
+  color: white;
+  border: 3px solid var(--dark);
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--dark);
+  min-width: 110px;
+}
+
+.hintChoice {
+  background: var(--green) !important;
+  animation: pulse 0.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.06); }
+}
+
+.back {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+}
