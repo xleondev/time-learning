@@ -1,0 +1,20 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Caveat', cursive;
+  background: #fffde7;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+:root {
+  --cream: #fffde7;
+  --yellow: #ffd54f;
+  --red: #ef5350;
+  --blue: #42a5f5;
+  --green: #66bb6a;
+  --purple: #ab47bc;
+  --orange: #ffa726;
+  --dark: #3e2723;
+  --text: #4e342e;
+}
