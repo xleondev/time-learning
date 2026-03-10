@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useMemo } from 'react'
 import Confetti from './Confetti'
 import styles from './FeedbackOverlay.module.css'
 
@@ -15,6 +16,8 @@ function randomMsg(type) {
 
 export default function FeedbackOverlay({ type, correctTime, onNext }) {
   const isCorrect = type === 'correct'
+  // Stabilise message so re-renders don't flicker to a different string
+  const message = useMemo(() => randomMsg(type), [type])
 
   return (
     <>
@@ -25,12 +28,12 @@ export default function FeedbackOverlay({ type, correctTime, onNext }) {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.5, opacity: 0 }}
       >
-        <p className={styles.message}>{randomMsg(type)}</p>
+        <p className={styles.message}>{message}</p>
         {type === 'hint' && (
           <p className={styles.hint}>The answer is {correctTime}</p>
         )}
         <button className={styles.nextBtn} onClick={onNext}>
-          {isCorrect ? 'Next →' : 'Got it →'}
+          {isCorrect ? 'Next →' : 'Got it, continue →'}
         </button>
       </motion.div>
     </>

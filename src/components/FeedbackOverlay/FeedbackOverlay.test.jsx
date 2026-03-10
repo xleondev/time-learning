@@ -23,7 +23,7 @@ describe('FeedbackOverlay', () => {
 
   it('renders Got it button on wrong', () => {
     render(<FeedbackOverlay type="wrong" correctTime="3:00" onNext={() => {}} />)
-    expect(screen.getByText('Got it →')).toBeInTheDocument()
+    expect(screen.getByText('Got it, continue →')).toBeInTheDocument()
   })
 
   it('shows correct time on hint', () => {

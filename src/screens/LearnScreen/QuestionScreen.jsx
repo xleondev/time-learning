@@ -108,13 +108,16 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
         </motion.div>
       </AnimatePresence>
 
-      {feedback && (
-        <FeedbackOverlay
-          type={feedback}
-          correctTime={formatTime(question.hours, question.minutes)}
-          onNext={handleNext}
-        />
-      )}
+      <AnimatePresence>
+        {feedback && (
+          <FeedbackOverlay
+            key={feedback}
+            type={feedback}
+            correctTime={formatTime(question.hours, question.minutes)}
+            onNext={handleNext}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
