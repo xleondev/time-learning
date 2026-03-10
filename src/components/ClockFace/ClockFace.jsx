@@ -83,8 +83,8 @@ export default function ClockFace({
   const { hourAngle, minuteAngle } = timeToAngles(displayHours, displayMinutes)
 
   const hintAngle = (minuteAngle - 90) * (Math.PI / 180)
-  const hintTipX = CX + R * 0.8 * Math.cos(hintAngle)
-  const hintTipY = CY + R * 0.8 * Math.sin(hintAngle)
+  const hintTipX = CX + R * 0.72 * Math.cos(hintAngle)
+  const hintTipY = CY + R * 0.72 * Math.sin(hintAngle)
 
   useEffect(() => {
     const svg = svgRef.current
@@ -142,7 +142,7 @@ export default function ClockFace({
 
     // Draw hands
     drawHand(svg, rc, hourAngle, R * 0.55, '#ef5350', 6)
-    drawHand(svg, rc, minuteAngle, R * 0.8, '#42a5f5', 4)
+    drawHand(svg, rc, minuteAngle, R * 0.72, '#42a5f5', 4)
 
     // Center dot
     svg.appendChild(rc.circle(CX, CY, 12, {
@@ -153,7 +153,7 @@ export default function ClockFace({
     }))
 
     addHandTouchTarget(svg, hourAngle, R * 0.55, '#ef5350', interactive)
-    addHandTouchTarget(svg, minuteAngle, R * 0.8, '#42a5f5', interactive)
+    addHandTouchTarget(svg, minuteAngle, R * 0.72, '#42a5f5', interactive)
   }, [displayHours, displayMinutes, interactive])
 
   // Copy SVG content to loupe whenever clock redraws
