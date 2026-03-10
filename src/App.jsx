@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import HomeScreen from './screens/HomeScreen'
+import HomeScreen from './screens/HomeScreen/HomeScreen'
 import LearnScreen from './screens/LearnScreen'
 import PlayScreen from './screens/PlayScreen'
 

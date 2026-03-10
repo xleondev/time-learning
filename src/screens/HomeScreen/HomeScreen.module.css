@@ -1,0 +1,52 @@
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  background: radial-gradient(ellipse at center, #fff9c4 0%, #fffde7 70%);
+}
+
+.title {
+  font-family: 'Schoolbell', cursive;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  color: var(--dark);
+  text-align: center;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  color: var(--text);
+  margin-bottom: 3rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  font-family: 'Schoolbell', cursive;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  padding: 1rem 2.5rem;
+  border: 4px solid var(--dark);
+  border-radius: 16px;
+  cursor: pointer;
+  min-width: 160px;
+  box-shadow: 4px 4px 0 var(--dark);
+  transition: box-shadow 0.1s;
+}
+
+.btn:active { box-shadow: 1px 1px 0 var(--dark); }
+
+.learnBtn { background: var(--yellow); }
+.playBtn { background: var(--green); }
+
+.doodles { position: absolute; inset: 0; pointer-events: none; }
+.doodle { position: absolute; font-size: clamp(2rem, 5vw, 3.5rem); opacity: 0.6; }
