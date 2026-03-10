@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import rough from 'roughjs'
 import { timeToAngles, snapMinutes } from '../../utils/time'
 import { useDragHand } from './useDragHand'
@@ -39,6 +40,9 @@ export default function ClockFace({
 
   const [isDragging, setIsDragging] = useState(false)
   const [dragClient, setDragClient] = useState(null) // { clientX, clientY }
+  const [showHint, setShowHint] = useState(
+    () => interactive && !localStorage.getItem('clockDragHintSeen')
+  )
   const loupeRef = useRef(null)
 
   const handleAngleChange = useCallback((angle) => {
@@ -64,13 +68,23 @@ export default function ClockFace({
     CY,
     handleAngleChange,
     {
-      onDragStart: () => setIsDragging(true),
+      onDragStart: () => {
+        setIsDragging(true)
+        if (showHint) {
+          localStorage.setItem('clockDragHintSeen', '1')
+          setShowHint(false)
+        }
+      },
       onDragEnd: () => { setIsDragging(false); setDragClient(null) },
       onPointerMove: (pos) => setDragClient(pos),
     }
   )
 
   const { hourAngle, minuteAngle } = timeToAngles(displayHours, displayMinutes)
+
+  const hintAngle = (minuteAngle - 90) * (Math.PI / 180)
+  const hintTipX = CX + R * 0.8 * Math.cos(hintAngle)
+  const hintTipY = CY + R * 0.8 * Math.sin(hintAngle)
 
   useEffect(() => {
     const svg = svgRef.current
@@ -157,8 +171,8 @@ export default function ClockFace({
     const svgY = (dragClient.clientY - rect.top) / scale
     const win = 80
     const viewBox = `${svgX - win / 2} ${svgY - win / 2} ${win} ${win}`
-    const left = Math.max(0, Math.min(window.innerWidth - 150, dragClient.clientX - 75))
-    const top = Math.max(0, dragClient.clientY - 230)
+    const left = Math.max(16, Math.min(window.innerWidth - 166, dragClient.clientX - 75))
+    const top = Math.max(16, Math.min(window.innerHeight - 166, dragClient.clientY - 230))
     return { viewBox, left, top }
   })()
 
@@ -185,6 +199,24 @@ export default function ClockFace({
           />
         </div>
       )}
+      {showHint && (
+        <svg
+          data-testid="drag-hint"
+          className={styles.hintOverlay}
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+        >
+          <motion.circle
+            cx={hintTipX}
+            cy={hintTipY}
+            r={14}
+            fill="none"
+            stroke="#42a5f5"
+            strokeWidth={3}
+            animate={{ r: [14, 32], opacity: [1, 0] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeOut' }}
+          />
+        </svg>
+      )}
     </div>
   )
 }
@@ -210,7 +242,7 @@ function addHandTouchTarget(svg, angleDeg, length, dotColor, interactive) {
     const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
     hitArea.setAttribute('cx', tipX)
     hitArea.setAttribute('cy', tipY)
-    hitArea.setAttribute('r', 22)
+    hitArea.setAttribute('r', 30)
     hitArea.setAttribute('fill', 'transparent')
     hitArea.setAttribute('stroke', 'none')
     svg.appendChild(hitArea)
@@ -220,7 +252,7 @@ function addHandTouchTarget(svg, angleDeg, length, dotColor, interactive) {
   const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
   dot.setAttribute('cx', tipX)
   dot.setAttribute('cy', tipY)
-  dot.setAttribute('r', 5)
+  dot.setAttribute('r', 7)
   dot.setAttribute('fill', dotColor)
   dot.setAttribute('stroke', '#4e342e')
   dot.setAttribute('stroke-width', '1.5')

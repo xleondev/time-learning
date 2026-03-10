@@ -81,6 +81,45 @@ describe('ClockFace tick marks', () => {
   })
 })
 
+describe('ClockFace drag hint', () => {
+  beforeEach(() => {
+    localStorage.removeItem('clockDragHintSeen')
+  })
+
+  it('shows drag hint on first interactive render', () => {
+    const { container } = render(
+      <ClockFace hours={3} minutes={0} interactive snapStep={5} onTimeChange={() => {}} />
+    )
+    expect(container.querySelector('[data-testid="drag-hint"]')).toBeInTheDocument()
+  })
+
+  it('does not show drag hint when already seen', () => {
+    localStorage.setItem('clockDragHintSeen', '1')
+    const { container } = render(
+      <ClockFace hours={3} minutes={0} interactive snapStep={5} onTimeChange={() => {}} />
+    )
+    expect(container.querySelector('[data-testid="drag-hint"]')).not.toBeInTheDocument()
+  })
+
+  it('does not show drag hint on non-interactive clock', () => {
+    const { container } = render(<ClockFace hours={3} minutes={0} />)
+    expect(container.querySelector('[data-testid="drag-hint"]')).not.toBeInTheDocument()
+  })
+
+  it('hides drag hint and sets localStorage after first drag', () => {
+    const { container } = render(
+      <ClockFace hours={3} minutes={0} interactive snapStep={5} onTimeChange={() => {}} />
+    )
+    const svg = container.querySelector('svg')
+    svg.getBoundingClientRect = () => ({ left: 0, top: 0, width: 300, height: 300 })
+
+    act(() => { fireEvent.mouseDown(svg, { clientX: 150, clientY: 50 }) })
+
+    expect(container.querySelector('[data-testid="drag-hint"]')).not.toBeInTheDocument()
+    expect(localStorage.getItem('clockDragHintSeen')).toBe('1')
+  })
+})
+
 describe('ClockFace magnifier loupe', () => {
   it('shows loupe element when dragging starts on interactive clock', () => {
     const { container } = render(
