@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import ClockFace from '../../components/ClockFace/ClockFace'
 import { formatTime, generateChoices } from '../../utils/time'
@@ -35,7 +35,10 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
   const [attempts, setAttempts] = useState(0)
   const [firstAttemptCorrect, setFirstAttemptCorrect] = useState(0)
   const [feedback, setFeedback] = useState(null) // 'correct' | 'wrong' | 'hint'
-  const choices = generateChoices(question.hours, question.minutes)
+  const choices = useMemo(
+    () => generateChoices(question.hours, question.minutes),
+    [question.hours, question.minutes]
+  )
 
   const isCorrect = (h, m) => h === question.hours && m === question.minutes
 
