@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 
-export function useDragHand(svgRef, centerX, centerY, onAngleChange) {
+export function useDragHand(svgRef, centerX, centerY, onAngleChange, callbacks = {}) {
+  const { onDragStart, onDragEnd, onPointerMove } = callbacks
   const dragging = useRef(false)
 
   const getAngle = useCallback((clientX, clientY) => {
@@ -21,13 +22,20 @@ export function useDragHand(svgRef, centerX, centerY, onAngleChange) {
     const onStart = (e) => {
       dragging.current = true
       e.preventDefault()
+      const touch = e.touches?.[0] ?? e
+      onDragStart?.()
+      onPointerMove?.({ clientX: touch.clientX, clientY: touch.clientY })
     }
     const onMove = (e) => {
       if (!dragging.current) return
       const touch = e.touches?.[0] ?? e
       onAngleChange(getAngle(touch.clientX, touch.clientY))
+      onPointerMove?.({ clientX: touch.clientX, clientY: touch.clientY })
     }
-    const onEnd = () => { dragging.current = false }
+    const onEnd = () => {
+      dragging.current = false
+      onDragEnd?.()
+    }
 
     svg.addEventListener('mousedown', onStart)
     window.addEventListener('mousemove', onMove)
@@ -44,5 +52,5 @@ export function useDragHand(svgRef, centerX, centerY, onAngleChange) {
       window.removeEventListener('touchmove', onMove)
       window.removeEventListener('touchend', onEnd)
     }
-  }, [svgRef, getAngle, onAngleChange])
+  }, [svgRef, getAngle, onAngleChange, onDragStart, onDragEnd, onPointerMove])
 }
