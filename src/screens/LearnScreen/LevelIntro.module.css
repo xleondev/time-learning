@@ -1,0 +1,85 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background: #fff8e1;
+  gap: 1rem;
+}
+
+.title {
+  font-family: 'Schoolbell', cursive;
+  font-size: 1.8rem;
+  color: #4e342e;
+  margin: 0;
+}
+
+.clockWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  background: white;
+  border-radius: 8px;
+  padding: 4px 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  white-space: nowrap;
+}
+
+.hourLabel {
+  left: -180px;
+  top: 40%;
+  color: #ef5350;
+  border: 2px solid #ef5350;
+}
+
+.minuteLabel {
+  right: -200px;
+  top: 25%;
+  color: #42a5f5;
+  border: 2px solid #42a5f5;
+}
+
+.arrow {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.tip {
+  font-family: 'Caveat', cursive;
+  font-size: 1.3rem;
+  color: #5d4037;
+  background: #fff9c4;
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+  border: 2px dashed #f9a825;
+  margin: 0;
+}
+
+.goBtn {
+  font-family: 'Schoolbell', cursive;
+  font-size: 1.3rem;
+  padding: 0.7rem 2rem;
+  background: #66bb6a;
+  color: white;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #388e3c;
+}
+
+.goBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #388e3c;
+}
