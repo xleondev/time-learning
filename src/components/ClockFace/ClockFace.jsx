@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import rough from 'roughjs'
-import { timeToAngles, anglesToTime, snapMinutes } from '../../utils/time'
+import { timeToAngles, snapMinutes } from '../../utils/time'
 import { useDragHand } from './useDragHand'
 import styles from './ClockFace.module.css'
 
