@@ -79,8 +79,8 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
             <>
               <div className={styles.clockCol}>
                 <ClockFace
-                  hours={selectedTime.hours}
-                  minutes={selectedTime.minutes}
+                  hours={feedback === 'hint' ? question.hours : selectedTime.hours}
+                  minutes={feedback === 'hint' ? question.minutes : selectedTime.minutes}
                   interactive
                   snapStep={config.snapStep}
                   showMinuteLabels={level >= 5}
