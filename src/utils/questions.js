@@ -1,8 +1,8 @@
 export const LEVEL_CONFIG = {
-  1: { snapStep: 60, minuteOptions: [0] },
-  2: { snapStep: 30, minuteOptions: [0, 30] },
-  3: { snapStep: 15, minuteOptions: [0, 15, 30, 45] },
-  4: { snapStep: 5, minuteOptions: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55] },
+  1: { snapStep: 1, minuteOptions: [0] },
+  2: { snapStep: 1, minuteOptions: [0, 30] },
+  3: { snapStep: 1, minuteOptions: [0, 15, 30, 45] },
+  4: { snapStep: 1, minuteOptions: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55] },
   5: { snapStep: 1, minuteOptions: null }, // any minute
 }
 

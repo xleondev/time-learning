@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { generateQuestion, LEVEL_CONFIG, calcStars } from './questions'
 
 describe('LEVEL_CONFIG', () => {
-  it('level 1 snap step is 60 (hours only)', () => {
-    expect(LEVEL_CONFIG[1].snapStep).toBe(60)
+  it('level 1 snap step is 1 (every minute)', () => {
+    expect(LEVEL_CONFIG[1].snapStep).toBe(1)
   })
 
   it('level 5 snap step is 1 (any minute)', () => {
