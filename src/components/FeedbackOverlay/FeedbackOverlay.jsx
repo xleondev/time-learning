@@ -14,7 +14,7 @@ function randomMsg(type) {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
-export default function FeedbackOverlay({ type, correctTime, onNext }) {
+export default function FeedbackOverlay({ type, correctTime, onNext, onRetry }) {
   const isCorrect = type === 'correct'
   // Stabilise message so re-renders don't flicker to a different string
   const message = useMemo(() => randomMsg(type), [type])
@@ -32,9 +32,15 @@ export default function FeedbackOverlay({ type, correctTime, onNext }) {
         {type === 'hint' && (
           <p className={styles.hint}>The answer is {correctTime}</p>
         )}
-        <button className={styles.nextBtn} onClick={onNext}>
-          {isCorrect ? 'Next →' : 'Got it, continue →'}
-        </button>
+        {type === 'wrong' && onRetry ? (
+          <button className={styles.nextBtn} onClick={onRetry}>
+            Try Again
+          </button>
+        ) : (
+          <button className={styles.nextBtn} onClick={onNext}>
+            {isCorrect ? 'Next →' : 'Got it, continue →'}
+          </button>
+        )}
       </motion.div>
     </>
   )

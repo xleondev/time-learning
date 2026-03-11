@@ -83,6 +83,7 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
                   minutes={selectedTime.minutes}
                   interactive
                   snapStep={config.snapStep}
+                  showMinuteLabels={level >= 5}
                   onTimeChange={setSelectedTime}
                 />
               </div>
@@ -102,7 +103,7 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
           ) : (
             <>
               <div className={styles.clockCol}>
-                <ClockFace hours={question.hours} minutes={question.minutes} />
+                <ClockFace hours={question.hours} minutes={question.minutes} showMinuteLabels={level >= 5} />
               </div>
               <div className={styles.controlsCol}>
                 <p className={styles.prompt}>What time does the clock show?</p>
@@ -133,6 +134,7 @@ export default function QuestionScreen({ level, onComplete, onBack }) {
             type={feedback}
             correctTime={formatTime(question.hours, question.minutes)}
             onNext={handleNext}
+            onRetry={feedback === 'wrong' ? () => setFeedback(null) : undefined}
           />
         )}
       </AnimatePresence>
