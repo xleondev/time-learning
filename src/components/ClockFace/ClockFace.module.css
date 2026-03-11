@@ -22,3 +22,15 @@
   height: 100%;
   pointer-events: none;
 }
+
+.readout {
+  position: absolute;
+  bottom: -2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Schoolbell', cursive;
+  font-size: 1.6rem;
+  color: var(--dark);
+  pointer-events: none;
+  white-space: nowrap;
+}
