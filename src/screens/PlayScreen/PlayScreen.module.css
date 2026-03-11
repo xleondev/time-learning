@@ -38,6 +38,7 @@
   border-radius: 12px;
   cursor: pointer;
   box-shadow: 3px 3px 0 var(--dark);
+  margin-top: 1rem;
 }
 
 .back {

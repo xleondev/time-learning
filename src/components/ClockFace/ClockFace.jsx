@@ -111,7 +111,7 @@ export default function ClockFace({
     const rc = rough.svg(svg)
 
     g.appendChild(rc.circle(CX, CY, R * 2, {
-      roughness: 2.5, seed: 1,
+      roughness: 1.2, seed: 1,
       strokeWidth: 3,
       fill: '#fffde7', fillStyle: 'solid',
       stroke: '#4e342e',
@@ -131,8 +131,8 @@ export default function ClockFace({
     for (let i = 1; i <= 12; i++) {
       const angle = (i / 12) * 2 * Math.PI - Math.PI / 2
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-      text.setAttribute('x', CX + (R - 18) * Math.cos(angle))
-      text.setAttribute('y', CY + (R - 18) * Math.sin(angle))
+      text.setAttribute('x', CX + (R - 22) * Math.cos(angle))
+      text.setAttribute('y', CY + (R - 22) * Math.sin(angle))
       text.setAttribute('text-anchor', 'middle')
       text.setAttribute('dominant-baseline', 'central')
       text.setAttribute('font-family', 'Schoolbell, cursive')
