@@ -5,7 +5,7 @@ import { formatTime } from '../../utils/time'
 import styles from './PlayScreen.module.css'
 
 function randomTime() {
-  return { hours: Math.floor(Math.random() * 12) + 1, minutes: Math.floor(Math.random() * 12) * 5 }
+  return { hours: Math.floor(Math.random() * 12) + 1, minutes: Math.floor(Math.random() * 60) }
 }
 
 export default function PlayScreen({ onNavigate }) {
@@ -26,7 +26,7 @@ export default function PlayScreen({ onNavigate }) {
           hours={time.hours}
           minutes={time.minutes}
           interactive
-          snapStep={5}
+          snapStep={1}
           onTimeChange={handleTimeChange}
         />
       </div>
