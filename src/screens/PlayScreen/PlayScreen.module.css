@@ -28,6 +28,12 @@
   box-shadow: 3px 3px 0 var(--dark);
 }
 
+.controlsCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .randomBtn {
   font-family: 'Schoolbell', cursive;
   font-size: 1.5rem;
