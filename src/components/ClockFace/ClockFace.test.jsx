@@ -18,6 +18,26 @@ describe('ClockFace (static)', () => {
     fireEvent.mouseMove(window)
     expect(onTimeChange).not.toHaveBeenCalled()
   })
+
+  it('does not render minute labels by default', () => {
+    const { queryByText, container } = render(<ClockFace hours={3} minutes={0} />)
+    // '30' is never an hour number, so its presence indicates a minute label
+    expect(queryByText('30')).not.toBeInTheDocument()
+    // No text elements with the minute-label fill colour
+    expect(container.querySelector('text[fill="#a1887f"]')).not.toBeInTheDocument()
+  })
+
+  it('renders minute labels when showMinuteLabels=true', () => {
+    const { container } = render(
+      <ClockFace hours={3} minutes={0} showMinuteLabels />
+    )
+    const minuteLabels = container.querySelectorAll('text[fill="#a1887f"]')
+    expect(minuteLabels.length).toBe(11) // 5, 10, 15 … 55
+    const texts = Array.from(minuteLabels).map(el => el.textContent)
+    expect(texts).toContain('5')
+    expect(texts).toContain('10')
+    expect(texts).toContain('55')
+  })
 })
 
 describe('ClockFace (interactive)', () => {
@@ -54,6 +74,24 @@ describe('ClockFace (interactive)', () => {
       const { minutes } = onTimeChange.mock.calls.at(-1)[0]
       expect(minutes % 30).toBe(0)
     }
+  })
+
+  it('shows live readout while dragging', () => {
+    const { container, queryByTestId } = render(
+      <ClockFace hours={3} minutes={15} interactive snapStep={1} onTimeChange={() => {}} />
+    )
+    const svg = container.querySelector('svg')
+    svg.getBoundingClientRect = () => ({ left: 0, top: 0, width: 300, height: 300 })
+
+    expect(queryByTestId('live-readout')).not.toBeInTheDocument()
+
+    act(() => { fireEvent.mouseDown(svg, { clientX: 150, clientY: 0 }) })
+
+    expect(queryByTestId('live-readout')).toBeInTheDocument()
+
+    act(() => { fireEvent.mouseUp(window) })
+
+    expect(queryByTestId('live-readout')).not.toBeInTheDocument()
   })
 
   it('does not fire onTimeChange after mouseup', () => {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import rough from 'roughjs'
-import { timeToAngles, snapMinutes } from '../../utils/time'
+import { timeToAngles, snapMinutes, formatTime } from '../../utils/time'
 import { useDragHand } from './useDragHand'
 import styles from './ClockFace.module.css'
 
@@ -22,6 +22,7 @@ export default function ClockFace({
   minutes = 0,
   interactive = false,
   snapStep = 1,
+  showMinuteLabels = false,
   onTimeChange,
 }) {
   const svgRef = useRef(null)
@@ -49,6 +50,7 @@ export default function ClockFace({
   const [showHint, setShowHint] = useState(
     () => interactive && !localStorage.getItem('clockDragHintSeen')
   )
+  const [isDragging, setIsDragging] = useState(false)
 
   const handleAngleChange = useCallback((angle) => {
     if (activeHandRef.current === 'hour') {
@@ -80,6 +82,7 @@ export default function ClockFace({
     handleAngleChange,
     {
       onDragStart: (pos) => {
+        setIsDragging(true)
         if (showHint) {
           localStorage.setItem('clockDragHintSeen', '1')
           setShowHint(false)
@@ -96,6 +99,9 @@ export default function ClockFace({
           const dMin = Math.hypot(svgX - mTip.x, svgY - mTip.y)
           activeHandRef.current = dHour < dMin ? 'hour' : 'minute'
         }
+      },
+      onDragEnd: () => {
+        setIsDragging(false)
       },
     }
   )
@@ -145,7 +151,26 @@ export default function ClockFace({
         { roughness: 1.5, seed: i + 200, strokeWidth: 2, stroke: '#4e342e' }
       ))
     }
-  }, []) // runs once — static content never changes
+
+    // Minute labels at 5-min marks (just outside the clock circle)
+    if (showMinuteLabels) {
+      for (let m = 1; m <= 11; m++) {
+        const mins = m * 5
+        const angle = (mins / 60) * 2 * Math.PI - Math.PI / 2
+        const labelR = R + 12
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+        text.setAttribute('x', CX + labelR * Math.cos(angle))
+        text.setAttribute('y', CY + labelR * Math.sin(angle))
+        text.setAttribute('text-anchor', 'middle')
+        text.setAttribute('dominant-baseline', 'central')
+        text.setAttribute('font-family', 'Schoolbell, cursive')
+        text.setAttribute('font-size', '11')
+        text.setAttribute('fill', '#a1887f')
+        text.textContent = mins
+        g.appendChild(text)
+      }
+    }
+  }, [showMinuteLabels])
 
   const { hourAngle, minuteAngle } = timeToAngles(displayHours, displayMinutes)
   const hourTip = handEndpoint(hourAngle, HOUR_LEN)
@@ -197,6 +222,12 @@ export default function ClockFace({
             transition={{ duration: 1.2, repeat: Infinity, ease: 'easeOut' }}
           />
         </svg>
+      )}
+
+      {interactive && isDragging && (
+        <div className={styles.readout} data-testid="live-readout">
+          {formatTime(displayHours, displayMinutes)}
+        </div>
       )}
     </div>
   )
