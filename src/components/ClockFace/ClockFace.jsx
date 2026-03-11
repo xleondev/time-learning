@@ -9,6 +9,13 @@ const SIZE = 300
 const CX = SIZE / 2
 const CY = SIZE / 2
 const R = 120
+const HOUR_LEN = R * 0.55
+const MIN_LEN = R * 0.72
+
+function handEndpoint(angleDeg, length) {
+  const rad = (angleDeg - 90) * (Math.PI / 180)
+  return { x: CX + length * Math.cos(rad), y: CY + length * Math.sin(rad) }
+}
 
 export default function ClockFace({
   hours = 12,
@@ -18,10 +25,11 @@ export default function ClockFace({
   onTimeChange,
 }) {
   const svgRef = useRef(null)
+  const staticRef = useRef(null)
   const [localHours, setLocalHours] = useState(hours)
   const [localMinutes, setLocalMinutes] = useState(minutes)
 
-  // Refs so handleAngleChange always reads current values without stale closure
+  // Refs so callbacks always read current values without stale closure
   const localHoursRef = useRef(localHours)
   const localMinutesRef = useRef(localMinutes)
   const prevMinutesRef = useRef(localMinutes)
@@ -56,7 +64,6 @@ export default function ClockFace({
       const newMinutes = snapped === 60 ? 0 : snapped
       const prev = prevMinutesRef.current
       let newHours = localHoursRef.current
-      // Detect minute hand crossing 12 o'clock: high->low = hour++, low->high = hour--
       if (prev > 45 && newMinutes < 15) {
         newHours = (newHours % 12) + 1
       } else if (prev < 15 && newMinutes > 45) {
@@ -79,99 +86,72 @@ export default function ClockFace({
           localStorage.setItem('clockDragHintSeen', '1')
           setShowHint(false)
         }
-        // Detect which hand is closest to the touch point
         if (pos && svgRef.current) {
           const rect = svgRef.current.getBoundingClientRect()
           const scale = rect.width / SIZE
           const svgX = (pos.clientX - rect.left) / scale
           const svgY = (pos.clientY - rect.top) / scale
           const { hourAngle: hA, minuteAngle: mA } = timeToAngles(localHoursRef.current, localMinutesRef.current)
-          const hourRad = (hA - 90) * Math.PI / 180
-          const minRad = (mA - 90) * Math.PI / 180
-          const dHour = Math.hypot(svgX - (CX + R * 0.55 * Math.cos(hourRad)), svgY - (CY + R * 0.55 * Math.sin(hourRad)))
-          const dMin = Math.hypot(svgX - (CX + R * 0.72 * Math.cos(minRad)), svgY - (CY + R * 0.72 * Math.sin(minRad)))
+          const hTip = handEndpoint(hA, HOUR_LEN)
+          const mTip = handEndpoint(mA, MIN_LEN)
+          const dHour = Math.hypot(svgX - hTip.x, svgY - hTip.y)
+          const dMin = Math.hypot(svgX - mTip.x, svgY - mTip.y)
           activeHandRef.current = dHour < dMin ? 'hour' : 'minute'
         }
       },
     }
   )
 
-  const { hourAngle, minuteAngle } = timeToAngles(displayHours, displayMinutes)
-
-  const hintAngle = (minuteAngle - 90) * (Math.PI / 180)
-  const hintTipX = CX + R * 0.72 * Math.cos(hintAngle)
-  const hintTipY = CY + R * 0.72 * Math.sin(hintAngle)
-
+  // Draw static clock face once (circle, ticks, numbers)
   useEffect(() => {
+    const g = staticRef.current
     const svg = svgRef.current
-    if (!svg) return
-    svg.innerHTML = ''
+    if (!g || !svg) return
+    g.innerHTML = ''
     const rc = rough.svg(svg)
 
-    // Clock face circle
-    svg.appendChild(rc.circle(CX, CY, R * 2, {
-      roughness: 2.5,
+    g.appendChild(rc.circle(CX, CY, R * 2, {
+      roughness: 2.5, seed: 1,
       strokeWidth: 3,
-      fill: '#fffde7',
-      fillStyle: 'solid',
+      fill: '#fffde7', fillStyle: 'solid',
       stroke: '#4e342e',
     }))
 
-    // Minute tick marks (60 small, 12 medium at 5-min positions)
     for (let m = 0; m < 60; m++) {
       const isFiveMin = m % 5 === 0
       const angle = (m / 60) * 2 * Math.PI - Math.PI / 2
       const tickLen = isFiveMin ? 7 : 4
-      const x1 = CX + (R - tickLen) * Math.cos(angle)
-      const y1 = CY + (R - tickLen) * Math.sin(angle)
-      const x2 = CX + R * Math.cos(angle)
-      const y2 = CY + R * Math.sin(angle)
-      svg.appendChild(rc.line(x1, y1, x2, y2, {
-        roughness: 0.8,
-        strokeWidth: isFiveMin ? 2.5 : 1.2,
-        stroke: '#8d6e63',
-      }))
+      g.appendChild(rc.line(
+        CX + (R - tickLen) * Math.cos(angle), CY + (R - tickLen) * Math.sin(angle),
+        CX + R * Math.cos(angle), CY + R * Math.sin(angle),
+        { roughness: 0.8, seed: m + 100, strokeWidth: isFiveMin ? 2.5 : 1.2, stroke: '#8d6e63' }
+      ))
     }
 
-    // Hour markers and tick marks
     for (let i = 1; i <= 12; i++) {
       const angle = (i / 12) * 2 * Math.PI - Math.PI / 2
-      const tx = CX + (R - 18) * Math.cos(angle)
-      const ty = CY + (R - 18) * Math.sin(angle)
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-      text.setAttribute('x', tx)
-      text.setAttribute('y', ty)
+      text.setAttribute('x', CX + (R - 18) * Math.cos(angle))
+      text.setAttribute('y', CY + (R - 18) * Math.sin(angle))
       text.setAttribute('text-anchor', 'middle')
       text.setAttribute('dominant-baseline', 'central')
       text.setAttribute('font-family', 'Schoolbell, cursive')
       text.setAttribute('font-size', '22')
       text.setAttribute('fill', '#4e342e')
       text.textContent = i
-      svg.appendChild(text)
+      g.appendChild(text)
 
-      const x1 = CX + (R - 6) * Math.cos(angle)
-      const y1 = CY + (R - 6) * Math.sin(angle)
-      const x2 = CX + R * Math.cos(angle)
-      const y2 = CY + R * Math.sin(angle)
-      svg.appendChild(rc.line(x1, y1, x2, y2, { roughness: 1.5, strokeWidth: 2, stroke: '#4e342e' }))
+      g.appendChild(rc.line(
+        CX + (R - 6) * Math.cos(angle), CY + (R - 6) * Math.sin(angle),
+        CX + R * Math.cos(angle), CY + R * Math.sin(angle),
+        { roughness: 1.5, seed: i + 200, strokeWidth: 2, stroke: '#4e342e' }
+      ))
     }
+  }, []) // runs once — static content never changes
 
-    // Draw hands
-    drawHand(svg, rc, hourAngle, R * 0.55, '#ef5350', 6)
-    drawHand(svg, rc, minuteAngle, R * 0.72, '#42a5f5', 4)
-
-    // Center dot
-    svg.appendChild(rc.circle(CX, CY, 12, {
-      roughness: 1,
-      fill: '#4e342e',
-      fillStyle: 'solid',
-      stroke: '#4e342e',
-    }))
-
-    addHandTouchTarget(svg, hourAngle, R * 0.55, '#ef5350', interactive)
-    addHandTouchTarget(svg, minuteAngle, R * 0.72, '#42a5f5', interactive)
-  }, [displayHours, displayMinutes, interactive])
-
+  const { hourAngle, minuteAngle } = timeToAngles(displayHours, displayMinutes)
+  const hourTip = handEndpoint(hourAngle, HOUR_LEN)
+  const minTip = handEndpoint(minuteAngle, MIN_LEN)
 
   return (
     <div className={styles.wrapper}>
@@ -182,7 +162,25 @@ export default function ClockFace({
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         className={styles.clock}
         style={interactive ? { cursor: 'grab', touchAction: 'none' } : {}}
-      />
+      >
+        {/* Static clock face — drawn once by Rough.js */}
+        <g ref={staticRef} />
+
+        {/* Hands — React-controlled, no redraw of static parts */}
+        <line x1={CX} y1={CY} x2={hourTip.x} y2={hourTip.y}
+          stroke="#ef5350" strokeWidth="6" strokeLinecap="round" />
+        <line x1={CX} y1={CY} x2={minTip.x} y2={minTip.y}
+          stroke="#42a5f5" strokeWidth="4" strokeLinecap="round" />
+
+        {/* Center dot */}
+        <circle cx={CX} cy={CY} r={6} fill="#4e342e" />
+
+        {/* Touch targets (invisible hit areas + visible dots) */}
+        {interactive && <circle cx={hourTip.x} cy={hourTip.y} r={30} fill="transparent" />}
+        <circle cx={hourTip.x} cy={hourTip.y} r={7} fill="#ef5350" stroke="#4e342e" strokeWidth="1.5" />
+        {interactive && <circle cx={minTip.x} cy={minTip.y} r={30} fill="transparent" />}
+        <circle cx={minTip.x} cy={minTip.y} r={7} fill="#42a5f5" stroke="#4e342e" strokeWidth="1.5" />
+      </svg>
 
       {showHint && (
         <svg
@@ -191,8 +189,8 @@ export default function ClockFace({
           viewBox={`0 0 ${SIZE} ${SIZE}`}
         >
           <motion.circle
-            cx={hintTipX}
-            cy={hintTipY}
+            cx={minTip.x}
+            cy={minTip.y}
             r={14}
             fill="none"
             stroke="#42a5f5"
@@ -204,42 +202,4 @@ export default function ClockFace({
       )}
     </div>
   )
-}
-
-function drawHand(svg, rc, angleDeg, length, color, width) {
-  const angle = (angleDeg - 90) * (Math.PI / 180)
-  const x2 = CX + length * Math.cos(angle)
-  const y2 = CY + length * Math.sin(angle)
-  svg.appendChild(rc.line(CX, CY, x2, y2, {
-    roughness: 1.5,
-    strokeWidth: width,
-    stroke: color,
-  }))
-}
-
-function addHandTouchTarget(svg, angleDeg, length, dotColor, interactive) {
-  const angle = (angleDeg - 90) * (Math.PI / 180)
-  const tipX = CX + length * Math.cos(angle)
-  const tipY = CY + length * Math.sin(angle)
-
-  if (interactive) {
-    // Large invisible hit area
-    const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-    hitArea.setAttribute('cx', tipX)
-    hitArea.setAttribute('cy', tipY)
-    hitArea.setAttribute('r', 30)
-    hitArea.setAttribute('fill', 'transparent')
-    hitArea.setAttribute('stroke', 'none')
-    svg.appendChild(hitArea)
-  }
-
-  // Small visible affordance dot
-  const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-  dot.setAttribute('cx', tipX)
-  dot.setAttribute('cy', tipY)
-  dot.setAttribute('r', 7)
-  dot.setAttribute('fill', dotColor)
-  dot.setAttribute('stroke', '#4e342e')
-  dot.setAttribute('stroke-width', '1.5')
-  svg.appendChild(dot)
 }
