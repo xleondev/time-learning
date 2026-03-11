@@ -40,12 +40,9 @@ export default function ClockFace({
   const displayHours = interactive ? localHours : hours
   const displayMinutes = interactive ? localMinutes : minutes
 
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragClient, setDragClient] = useState(null) // { clientX, clientY }
   const [showHint, setShowHint] = useState(
     () => interactive && !localStorage.getItem('clockDragHintSeen')
   )
-  const loupeRef = useRef(null)
 
   const handleAngleChange = useCallback((angle) => {
     if (activeHandRef.current === 'hour') {
@@ -78,7 +75,6 @@ export default function ClockFace({
     handleAngleChange,
     {
       onDragStart: (pos) => {
-        setIsDragging(true)
         if (showHint) {
           localStorage.setItem('clockDragHintSeen', '1')
           setShowHint(false)
@@ -97,8 +93,6 @@ export default function ClockFace({
           activeHandRef.current = dHour < dMin ? 'hour' : 'minute'
         }
       },
-      onDragEnd: () => { setIsDragging(false); setDragClient(null) },
-      onPointerMove: (pos) => setDragClient(pos),
     }
   )
 
@@ -178,25 +172,6 @@ export default function ClockFace({
     addHandTouchTarget(svg, minuteAngle, R * 0.72, '#42a5f5', interactive)
   }, [displayHours, displayMinutes, interactive])
 
-  // Copy SVG content to loupe whenever clock redraws
-  useEffect(() => {
-    if (loupeRef.current && svgRef.current) {
-      loupeRef.current.innerHTML = svgRef.current.innerHTML
-    }
-  }, [displayHours, displayMinutes])
-
-  const loupeProps = (() => {
-    if (!isDragging || !dragClient || !svgRef.current) return null
-    const rect = svgRef.current.getBoundingClientRect()
-    const scale = rect.width / SIZE
-    const svgX = (dragClient.clientX - rect.left) / scale
-    const svgY = (dragClient.clientY - rect.top) / scale
-    const win = 80
-    const viewBox = `${svgX - win / 2} ${svgY - win / 2} ${win} ${win}`
-    const left = Math.max(16, Math.min(window.innerWidth - 166, dragClient.clientX - 75))
-    const top = Math.max(16, Math.min(window.innerHeight - 166, dragClient.clientY - 230))
-    return { viewBox, left, top }
-  })()
 
   return (
     <div className={styles.wrapper}>
@@ -208,19 +183,7 @@ export default function ClockFace({
         className={styles.clock}
         style={interactive ? { cursor: 'grab', touchAction: 'none' } : {}}
       />
-      {loupeProps && (
-        <div
-          data-testid="loupe"
-          className={styles.loupeContainer}
-          style={{ left: loupeProps.left, top: loupeProps.top }}
-        >
-          <svg
-            ref={loupeRef}
-            className={styles.loupeSvg}
-            viewBox={loupeProps.viewBox}
-          />
-        </div>
-      )}
+
       {showHint && (
         <svg
           data-testid="drag-hint"
