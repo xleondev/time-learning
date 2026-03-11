@@ -37,13 +37,11 @@ export default function ClockFace({
   useEffect(() => { localHoursRef.current = localHours }, [localHours])
   useEffect(() => { localMinutesRef.current = localMinutes; prevMinutesRef.current = localMinutes }, [localMinutes])
 
-  // Sync to external props when not interactive
+  // Sync to external props (works in both interactive and non-interactive mode)
   useEffect(() => {
-    if (!interactive) {
-      setLocalHours(hours)
-      setLocalMinutes(minutes)
-    }
-  }, [hours, minutes, interactive])
+    setLocalHours(hours)
+    setLocalMinutes(minutes)
+  }, [hours, minutes])
 
   const displayHours = interactive ? localHours : hours
   const displayMinutes = interactive ? localMinutes : minutes
